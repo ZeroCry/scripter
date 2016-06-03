@@ -93,7 +93,7 @@
   session = editor.getSession();
   selection = session.getSelection();
 
-  var dispatcher = new WebSocketRails('localhost:3000/websocket');
+  var dispatcher = new WebSocketRails('scriptsaver.herokuapp.com/websocket');
 
   function do_submit(){
     $("#raw_code").val(ace_document.getValue());
