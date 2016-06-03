@@ -32,9 +32,9 @@ To share a read only code snipped copy the url without the '/edit' sufix
 To embed in another site, use the url as a src parameter in a iframe object
 
 ```html
-<iframe src="http://scriptsaver.herokuapp.com/script/demo" width="100%" height="230px">
+<frame src="http://scriptsaver.herokuapp.com/script/demo" width="100%" height="230px">
 
-</iframe>
+</frame>
 ```
 
 Getting this :
