@@ -1,0 +1,218 @@
+<form id="editor_form" action="<%= edit_script_path(id: @script.slug) %>" method="POST">
+  <div id="options_bar">
+    <h1> <i class="fa fa-file-code-o" aria-hidden="true"></i>  Script Saver </h1>
+
+    <a href="<%= edit_script_path(id: @script.slug) %>" class="stopstream save_button">
+      <i class="fa fa-stop" aria-hidden="true"></i>
+      Stop
+    </a>
+  </div>
+  <textarea name="code" id="raw_code" type=hidden" style="display: none;"> <%= @script.code %> </textarea>
+  <div id="editor">
+  </div>
+
+  <div id="status_bar">
+
+    <div class="select" >
+      <select class="language_selector" name="language">
+        <option value="asm">asm</option>
+        <option value="css">css</option>
+        <option value="elixir">elixir</option>
+        <option value="golang">go</option>
+        <option value="groovy">groovy</option>
+        <option value="java">java</option>
+        <option value="jade">jade</option>
+        <option value="javascript">javascript</option>
+        <option value="java">java</option>
+        <option value="json">json</option>
+        <option value="haml">haml</option>
+        <option value="haskell">haskell</option>
+        <option value="html">html</option>
+        <option value="latex">latex</option>
+        <option value="lua">lua</option>
+        <option value="matlab">matlab</option>
+        <option value="markdown">markdown</option>
+        <option value="objectivec">objective-c</option>
+        <option value="php">php</option>
+        <option value="prolog">prolog</option>
+        <option value="r">r</option>
+        <option value="ruby">ruby</option>
+        <option value="rust">rust</option>
+        <option value="scala">scala</option>
+        <option value="sh">sh</option>
+        <option value="sql">sql</option>
+        <option value="swift">swift</option>
+        <option value="stylus">stylus</option>
+        <option value="typescript">typescript</option>
+        <option value="text">text</option>
+        <option value="xml">xml</option>
+      </select>
+    </div>
+    <div class="select" >
+      <select class="style_selector" name="style">
+        <option value="">custom theme</option>
+        <option value="ambiance">ambiance</option>
+        <option value="chaos">chaos</option>
+        <option value="chrome">chrome</option>
+        <option value="cloud">cloud</option>
+        <option value="cobalt">cobalt</option>
+        <option value="dawn">dawn</option>
+        <option value="dreamweaver">dreamweaver</option>
+        <option value="eclipse">eclipse</option>
+        <option value="github">github</option>
+        <option value="gruvbox">gruvbox</option>
+        <option value="iplastic">iplastic</option>
+        <option value="kr_theme">kr_theme</option>
+        <option value="kuroir">kuroir</option>
+        <option value="merbivore">merbivore</option>
+        <option value="mono_industrial">mono_industrial</option>
+        <option value="pastel_on_dark">pastel_on_dark</option>
+        <option value="solarized_dark">solarized_dark</option>
+        <option value="sqlserver">sqlserver</option>
+        <option value="terminal">terminal</option>
+        <option value="textmate">textmate</option>
+        <option value="tomorrow">tomorrow</option>
+        <option value="tomorrow-night">tomorrow-night</option>
+        <option value="twilight">twilight</option>
+        <option value="xcode">xcode</option>
+      </select>
+    </div>
+
+  </div>
+</form>
+
+<script>
+  var editor = ace.edit("editor");
+  var connection_id;
+  var flag_changing=false;
+  var flag_selection_changing=false;
+  editor.setTheme("ace/theme/monokai");
+  editor.getSession().setMode("ace/mode/javascript");
+
+  ace_document = editor.getSession().getDocument();
+  session = editor.getSession();
+  selection = session.getSelection();
+
+  var dispatcher = new WebSocketRails('localhost:3000/websocket');
+
+  function do_submit(){
+    $("#raw_code").val(ace_document.getValue());
+    $("#editor_form").submit();
+  }
+
+  $(".language_selector").on("change", function(e){
+    if (!flag_changing) {
+
+      dispatcher.trigger('change_language', {data: {connection_id: connection_id, channel: "editor_<%= @script.slug %>", language: $(this).val() }});
+    }
+    editor.getSession().setMode("ace/mode/" + $(this).val());
+  });
+
+  $(".style_selector").on("change", function(e){
+    if (!flag_changing) {
+
+      dispatcher.trigger('change_theme', {data: {connection_id: connection_id, channel: "editor_<%= @script.slug %>", theme: $(this).val() }});
+    }
+    editor.setTheme("ace/theme/" + $(this).val());
+  });
+
+  <% if @script.theme_string.to_s != "" %>
+  $(".style_selector").val("<%=@script.theme_string %>").change();
+  <% end %>
+
+  <% if @script.code.to_s != "" %>
+  ace_document.setValue($("#raw_code").val());
+  <% end %>
+
+  $(".language_selector").val("<%= @script.language %>").change();
+
+
+  dispatcher.on_open = function(data) {
+    console.log('Connection has been established: ', data);
+    connection_id = data['connection_id'];
+    // You can trigger new server events inside this callback if you wish.
+  }
+
+  dispatcher.bind('connection_closed', function(data) {
+    console.log('connection is closed');
+  });
+
+
+
+  selection.on("changeCursor", function(){
+    if (!flag_changing){
+      dispatcher.trigger('cursor_stream', {data: {connection_id: connection_id, channel: "editor_<%= @script.slug %>", position: editor.getCursorPosition()}});
+    }
+  });
+
+  selection.on("changeSelection", function(){
+    if (!flag_changing){
+      dispatcher.trigger('change_selection', {data: {connection_id: connection_id, channel: "editor_<%= @script.slug %>", range: selection.getRange()}});
+    }
+  });
+
+
+
+  channel = dispatcher.subscribe('editor_<%= @script.slug %>');
+
+  editor.on("change", function(e){
+    if (!flag_changing){
+      dispatcher.trigger('stream', {data: {connection_id: connection_id, channel: "editor_<%= @script.slug %>", body: e, fulltext: ace_document.getValue() }});
+    }
+  });
+
+  channel.bind('change_theme', function(data) {
+    flag_changing = true;
+    if (data['origin_connection'] != connection_id) {
+      $(".style_selector").val(data['body']).change();
+    }
+    flag_changing = false;
+  });
+
+  channel.bind('change_language', function(data) {
+    flag_changing = true;
+    if (data['origin_connection'] != connection_id) {
+      $(".language_selector").val(data['body']).change();
+    }
+    flag_changing = false;
+  });
+
+  channel.bind('change_selection', function(data) {
+    console.log(data);
+    flag_changing = true;
+    if (data['origin_connection'] != connection_id) {
+      selection.setSelectionRange(data['body'], false);
+    }
+    flag_changing = false;
+  });
+
+  channel.bind('stream_cursor_event', function(data) {
+    flag_changing = true;
+    console.log(data['body']);
+    if (data['origin_connection'] != connection_id) {
+      selection.moveCursorToPosition(data['body']);
+    }
+    flag_changing = false;
+  });
+
+  channel.bind('stream_response', function(data) {
+    if (data['origin_connection'] != connection_id){
+      flag_changing = true;
+      console.log(data['body']['action']);
+      res = data['body'];
+      switch (res['action']) {
+        case 'insert':
+          console.log("inserting");
+          position = {row: res['start']['row'], column: res['start']['column']};
+          ace_document.insert(position, (res['lines']).join(ace_document.getNewLineCharacter()));
+          break;
+        case 'remove':
+          ace_document.remove({start: res['start'], end: res['end']});
+          break;
+      }
+      console.log(data['body']);
+      flag_changing = false;
+    }
+  });
+
+</script>

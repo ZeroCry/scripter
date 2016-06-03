@@ -1,0 +1,29 @@
+<form id="editor_form" action="<%= edit_script_path(id: @script.slug) %>" method="POST">
+
+  <textarea name="code" id="raw_code" type=hidden" style="display: none;"> <%= @script.code %> </textarea>
+  <div id="editor" class="onshow">
+  </div>
+
+</form>
+
+<script>
+  var editor = ace.edit("editor");
+  editor.setTheme("ace/theme/monokai");
+  editor.getSession().setMode("ace/mode/<%= @script.language %>");
+
+
+
+  ace_document = editor.getSession().getDocument();
+
+  editor.setReadOnly(true);
+
+
+
+  <% if @script.theme_string.to_s != "" %>
+  editor.setTheme("ace/theme/<%= @script.theme_string %>");
+  <% end %>
+
+  <% if @script.code.to_s != "" %>
+  ace_document.setValue($("#raw_code").val());
+  <% end %>
+</script>
