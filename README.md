@@ -39,7 +39,6 @@ To embed in another site, use the url as a src parameter in a iframe object
 </frame>
 ```
  
- 
 
 ##### Start a Streaming #####
 
