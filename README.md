@@ -1,6 +1,6 @@
 # Scripter #
 
-A Tool to save snippets or make live coding streams
+A Tool to save snippets or make live coding streams, hosted on http://scriptsaver.herokuapp.com/
 
 **Content Table**
 
