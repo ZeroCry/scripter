@@ -36,11 +36,7 @@ To embed in another site, use the url as a src parameter in a iframe object
 
 </frame>
 ```
-
-Getting this :
-
-
-<iframe src="http://scriptsaver.herokuapp.com/script/demo" width="100%" height="230" frameborder="0" style="display:block; margin: 0 auto;">&nbsp;</iframe>
+ 
 
 ##### Start a Streaming #####
 
