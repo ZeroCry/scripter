@@ -40,7 +40,7 @@ To embed in another site, use the url as a src parameter in a iframe object
 Getting this :
 
 
-<iframe src="http://scriptsaver.herokuapp.com/script/demo" width="100%" height="230px" >unwantedtext</iframe>
+<iframe src="http://scriptsaver.herokuapp.com/script/demo" width="100%" height="230px" ><p>unwantedtext</p></iframe>
 
 ##### Start a Streaming #####
 
