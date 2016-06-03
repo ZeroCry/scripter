@@ -24,6 +24,5 @@ module ScriptSaver
     config.active_record.raise_in_transactional_callbacks = true
     config.action_dispatch.default_headers.merge!({'X-Frame-Options' => 'ALLOWALL'})
 
-
   end
 end
