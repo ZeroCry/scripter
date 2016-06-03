@@ -29,6 +29,8 @@ You have two options to create a new snippet
 
 To share a read only code snipped copy the url without the '/edit' sufix
 
+[](https://github.com/joelibaceta/scripter/blob/master/public/screen.png?raw=true)
+
 To embed in another site, use the url as a src parameter in a iframe object
 
 ```html
@@ -36,6 +38,7 @@ To embed in another site, use the url as a src parameter in a iframe object
 
 </frame>
 ```
+ 
  
 
 ##### Start a Streaming #####
