@@ -11,7 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160603134506) do
+ActiveRecord::Schema.define(version: 20160604191917) do
+
+  create_table "containers", force: :cascade do |t|
+    t.string   "language"
+    t.string   "name"
+    t.string   "extension_file"
+    t.string   "command"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
 
   create_table "scripts", force: :cascade do |t|
     t.string   "name"
@@ -21,6 +30,7 @@ ActiveRecord::Schema.define(version: 20160603134506) do
     t.string   "theme_string"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
+    t.string   "image"
   end
 
 end

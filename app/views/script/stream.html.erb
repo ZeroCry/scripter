@@ -155,7 +155,7 @@
 
 
   channel = dispatcher.subscribe('editor_<%= @script.slug %>');
-
+r
   editor.on("change", function(e){
     if (!flag_changing){
       dispatcher.trigger('stream', {data: {connection_id: connection_id, channel: "editor_<%= @script.slug %>", body: e, fulltext: ace_document.getValue() }});

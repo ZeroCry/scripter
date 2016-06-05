@@ -6,6 +6,10 @@ gem 'rails', '4.2.6'
 # Use sqlite3 as the database for Active Record
 gem 'pg'
 
+gem 'sqlite3'
+
+gem "react_on_rails"
+
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
@@ -26,6 +30,8 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'faye-websocket', '0.10.0'
 gem 'websocket-rails'
+
+gem 'docker-api'
 
 
 

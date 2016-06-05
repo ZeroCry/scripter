@@ -1,5 +1,10 @@
 require 'pp'
+
 class StreamController < WebsocketRails::BaseController
+
+
+
+
 
   def stream
     script = Script.find_by_slug(message[:channel].split("_")[1]) || Script.new({slug: message[:channel].split("_")[1]})

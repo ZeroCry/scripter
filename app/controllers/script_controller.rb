@@ -1,12 +1,56 @@
 require 'securerandom'
 require 'socket'
-
-hostname = 'localhost'
-port = 3000
+require 'docker'
 
 class ScriptController < ApplicationController
 
-  skip_before_filter :verify_authenticity_token,
+  skip_before_filter :verify_authenticity_token
+
+  def exec
+
+    script = Script.find_by_slug(params[:id])
+
+    image = Docker::Image.get(script.image)
+
+    
+
+    container = image.run(params[:cmd])
+
+    stream_logs(container, "editor_#{script.slug}")
+
+    container.stop
+    container.delete(:force => true)
+    render nothing: true
+  end
+
+  def run
+    script = Script.find_by_slug(params[:id])
+    _containter = Container.find_by_language(language = params[:language])
+
+    if _containter
+
+      file_path = script.build_file(params[:body])
+
+      _image = Docker::Image.get(script.image)
+      image = _image.insert_local('localPath' => file_path, 'outputPath' => '/usr/src/app/')
+
+      WebsocketRails["editor_#{script.slug}"].trigger 'terminal_log', script.run_command
+
+      p "RUN: #{script.run_command}"
+
+      container = image.run(script.run_command)
+
+      stream_logs(container, "editor_#{script.slug}")
+
+      container.stop
+      container.delete(:force => true)
+
+      File.delete(file_path)
+
+    end
+    render nothing: true
+
+  end
 
   def index
     @script = Script.new
@@ -66,7 +110,23 @@ class ScriptController < ApplicationController
       @script = Script.find_by_slug(params[:id]) || Script.new({slug: params[:id]})
       puts @script.code.to_json
     end
-      render :new
+    render :new
+  end
+
+  def stream_logs(container, channel)
+
+    container.logs(stdout: true)
+    container.logs(stderr: true)
+
+    container.streaming_logs(stdout: true) do |stream, chunk|
+      puts "#{stream}: #{chunk}"
+      WebsocketRails[channel].trigger 'terminal_stdout', chunk
+    end
+
+    container.streaming_logs(stderr: true) do |stream, chunk|
+      puts "#{stream}: #{chunk}"
+      WebsocketRails[channel].trigger 'terminal_stderr', chunk
+    end
   end
 
   private

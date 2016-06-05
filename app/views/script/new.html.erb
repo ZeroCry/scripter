@@ -1,56 +1,66 @@
 <form id="editor_form" action="<%= edit_script_path(id: @script.slug) %>" method="POST">
   <div id="options_bar">
-    <h1> <i class="fa fa-file-code-o" aria-hidden="true"></i>  Script Saver </h1>
-    <a href="javascript:do_submit();" class="btn blue save_button">
-      <i class="fa fa-cloud-upload" aria-hidden="true"></i>
-      Save
-    </a>
-    <a href="<%=stream_script_path(id: @script.slug)%>" class="streambtn save_button">
-      <i class="fa fa-play" aria-hidden="true"></i>
-      Stream
-    </a>
+    <h1> <i class="fa fa-file-code-o" aria-hidden="true"></i>  Script Playground </h1>
+
+    <ul>
+      <li style="float:right">
+        <a href="javascript:do_submit();">
+          <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+          Save
+        </a>
+      </li>
+      <li style="float:right">
+        <a href="<%=stream_script_path(id: @script.slug)%>" >
+          <i class="fa fa-code-fork" aria-hidden="true"></i>
+          Fork
+        </a>
+      </li>
+      <li style="float:right">
+        <a href="<%=stream_script_path(id: @script.slug)%>" >
+          <i class="fa fa-code" aria-hidden="true"></i>
+          Embed
+        </a>
+      </li>
+      <li style="float:right">
+        <a href="<%=stream_script_path(id: @script.slug)%>" class="red-font">
+          <i class="fa fa-circle" aria-hidden="true"></i>
+          Stream
+        </a>
+      </li>
+
+      <li style="float:right">
+        <a href="javascript:run_script();" class="green-font">
+          <i class="fa fa-play" aria-hidden="true"></i>
+          Run
+        </a>
+      </li>
+    </ul>
+
+
 
   </div>
   <textarea name="code" id="raw_code" type=hidden" style="display: none;"> <%= @script.code %> </textarea>
+  <div id="files_tab">
+    <ul>
+      <li> <a href="#">file.rb</a> </li>
+      <li> <a href="#">Gemfile</a> </li>
+      <li> <a href="#">Gemfile.lock</a> </li>
+      <li> <a href="#"> + </a> </li>
+    </ul>
+  </div>
   <div id="editor">
   </div>
-
+  <div id="terminal-container">
+    <div id="terminal">
+    </div>
+  </div>
   <div id="status_bar">
 
     <div class="select" >
       <select class="language_selector" name="language">
-        <option value="">language</option>
-        <option value="asm">asm</option>
-        <option value="css">css</option>
-        <option value="elixir">elixir</option>
-        <option value="golang">go</option>
-        <option value="groovy">groovy</option>
-        <option value="java">java</option>
-        <option value="jade">jade</option>
-        <option value="javascript">javascript</option>
-        <option value="java">java</option>
-        <option value="json">json</option>
-        <option value="haml">haml</option>
-        <option value="haskell">haskell</option>
-        <option value="html">html</option>
-        <option value="latex">latex</option>
-        <option value="lua">lua</option>
-        <option value="matlab">matlab</option>
-        <option value="markdown">markdown</option>
-        <option value="objectivec">objective-c</option>
-        <option value="php">php</option>
-        <option value="prolog">prolog</option>
-        <option value="r">r</option>
         <option value="ruby">ruby</option>
-        <option value="rust">rust</option>
-        <option value="scala">scala</option>
-        <option value="sh">sh</option>
-        <option value="sql">sql</option>
-        <option value="swift">swift</option>
-        <option value="stylus">stylus</option>
-        <option value="typescript">typescript</option>
-        <option value="text">text</option>
-        <option value="xml">xml</option>
+        <option value="java">java</option>
+        <option value="groovy">groovy</option>
       </select>
     </div>
     <div class="select" >
@@ -99,6 +109,21 @@
   selection = session.getSelection();
 
 
+  function run_script(){
+
+    data_map = {language: $(".language_selector").val(), body: ace_document.getValue()};
+
+    $.ajax({
+      type: "POST",
+      url: "<%= run_script_path(@script.slug)%>",
+      data: data_map
+    }).done(function(data){
+
+    }).fail(function(error){
+
+    });
+  }
+
   function do_submit(){
     $("#raw_code").val(ace_document.getValue());
     $("#editor_form").submit();
@@ -125,7 +150,37 @@
   $(".language_selector").val("<%= @script.language %>").change();
 
 
+  var eterminal = $("#terminal").terminal(terminalHandler, {greetings: "Welcome  This is a limited terminal by now ...  ", prompt: "neo@matrix$", history: true});
 
+
+  function terminalHandler(command, term){
+
+    data = {cmd: command};
+    $.ajax({
+      type: "POST",
+      url: "<%= exec_script_path(@script.slug)%>",
+      data: data
+    });
+  }
+
+  var dispatcher = new WebSocketRails('localhost:3000/websocket');
+
+  channel = dispatcher.subscribe('editor_<%= @script.slug %>');
+
+  channel.bind('terminal_stdout', function(data) {
+    console.log(data);
+    eterminal.echo(data);
+  });
+
+  channel.bind('terminal_stderr', function(data) {
+    console.log(data);
+    eterminal.echo(data);
+  });
+
+  channel.bind('terminal_log', function(data) {
+    console.log(data);
+    eterminal.echo(data);
+  });
 
 
 </script>

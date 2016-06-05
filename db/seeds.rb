@@ -5,3 +5,10 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+#Container.create({name: 'ruby', language: 'ruby', command: 'ruby', extension_file: 'rb'})
+
+#Container.create({name: 'java', language: 'java', command: 'javac', extension_file: 'java'})
+
+Container.create({name: 'groovy', language: 'groovy', command: 'groovyc', extension_file: 'groovy'})
+

@@ -9,6 +9,8 @@ Rails.application.routes.draw do
     member do
       post 'edit'
       get 'stream'
+      post 'run'
+      post 'exec'
     end
   end
 

@@ -2,13 +2,97 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+body {
+  overflow: hidden;
+}
+
 #editor {
+  position: absolute;
+  top: 65px;
+  right: 0;
+  bottom: 20px;
+  left: 0;
+  width: 60%;
+  border-top: 1px solid #b5b5b5;
+}
+
+#files_tab {
+  position: absolute;
+  display: block;
+  top: 40px;
+  height: 25px;
+  left: 0px;
+  width: 60%;
+  background: #ccc;
+  ul {
+    list-style: none;
+    line-height: 1;
+    display: block;
+    text-align: center;
+    float: left;
+    margin: 0px;
+    padding: 0px;
+  }
+  li{
+    list-style: none;
+    line-height: 1;
+    display: block;
+    text-align: center;
+    float: left;
+    padding-top: 2px;
+
+    a{
+      padding: 6px;
+      padding-left: 15px;
+      padding-right: 15px;
+
+      color: #666666;
+      z-index: 2;
+      display: block;
+
+      font-size: 12px;
+      font-weight: 400;
+      text-decoration: none;
+      color: #444444;
+      -webkit-transition: all .2s ease;
+      -moz-transition: all .2s ease;
+      -ms-transition: all .2s ease;
+      -o-transition: all .2s ease;
+      transition: all .2s ease;
+      border-right: 1px solid #a5a5a5;
+
+    }
+
+  }
+}
+
+.red-font {
+  color: #d4180f !important;
+}
+
+.green-font {
+  color: #04b300 !important;
+}
+
+#terminal-container {
+  border-left: 1px solid #dedede;
+  background-color: #000;
   position: absolute;
   top: 40px;
   right: 0;
   bottom: 20px;
-  left: 0;
+  left: 60%;
+  width: 40%;
+  bottom: 20px;
+  #terminal{
+    top: 0px;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+  }
 }
+
+
 
 #options_bar {
   width: 100%;
@@ -26,6 +110,43 @@
   background: -webkit-linear-gradient(top,  #fcfcfc 0%,#ededed 100%); /* Chrome10-25,Safari5.1-6 */
   background: linear-gradient(to bottom,  #fcfcfc 0%,#ededed 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+  -webkit-box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.15);
+  -moz-box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.15);
+  box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.15);
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    padding-right: 20px;
+    font-size: 12px;
+    font-family: Tahoma;
+    overflow: hidden;
+    background: #fcfcfc; /* Old browsers */
+    background: -moz-linear-gradient(top,  #fcfcfc 0%, #ededed 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top,  #fcfcfc 0%,#ededed 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom,  #fcfcfc 0%,#ededed 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+  }
+
+  li {
+    float: left;
+    border-left: 1px solid #dedede;
+  }
+
+  li a {
+    display: block;
+    color: rgb(74, 74, 74);
+    text-align: center;
+    padding: 8px 16px;
+    text-decoration: none;
+  }
+
+  /* Change the link color to #111 (black) on hover */
+  li a:hover {
+    background-color: #ddd;
+  }
+
 }
 
 .onshow{
@@ -247,4 +368,10 @@ h1 {
   background-color: transparent;
   background-image: none;
   appearance: none;
+}
+
+
+.prompt, .command {
+  color: #0c0;
+  text-shadow: 0 0 3px rgba(0,100,0,50);
 }
